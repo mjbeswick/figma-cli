@@ -1,0 +1,38 @@
+{
+  "name": "Sample checkout",
+  "editorType": "figma",
+  "version": "sample-version",
+  "document": {
+    "id": "0:0",
+    "name": "Document",
+    "type": "DOCUMENT",
+    "children": [
+      {
+        "id": "1:0",
+        "name": "Checkout",
+        "type": "CANVAS",
+        "children": [
+          {
+            "id": "2:0",
+            "name": "Pay now",
+            "type": "FRAME",
+            "absoluteBoundingBox": { "x": 24, "y": 40, "width": 180, "height": 48 },
+            "layoutMode": "HORIZONTAL",
+            "paddingLeft": 16,
+            "fills": [{ "type": "SOLID", "color": { "r": 0.1, "g": 0.3, "b": 0.8 } }],
+            "children": [
+              {
+                "id": "3:0",
+                "name": "Pay now label",
+                "type": "TEXT",
+                "characters": "Pay now",
+                "style": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600 }
+              }
+            ]
+          },
+          { "id": "2:1", "name": "Order summary", "type": "FRAME" }
+        ]
+      }
+    ]
+  }
+}
