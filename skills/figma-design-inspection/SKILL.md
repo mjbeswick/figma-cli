@@ -12,7 +12,7 @@ for analysis and code implementation. This is read-only.
 
 1. Confirm the design link or local API-shaped JSON export supplied by the
    user. Do not guess a file or search the account for unrelated designs.
-2. For a remote file, verify that `FIGMA_ACCESS_TOKEN` is configured in the
+2. For a remote file, verify that `FIGMA_API_KEY` or `FIGMA_ACCESS_TOKEN` is configured in the
    process environment. Never ask the user to paste a token in chat or include
    a token in a command argument. The token must have `file_content:read` and
    access to the requested file.
@@ -52,7 +52,7 @@ match on names.
 ## Authentication and boundaries
 
 - Remote requests use the official Figma REST API and `X-Figma-Token` header.
-- `FIGMA_ACCESS_TOKEN` is read from the environment and is never saved or
+- `FIGMA_API_KEY` (or `FIGMA_ACCESS_TOKEN`, which takes precedence) is read from the environment and is never saved or
   printed by this CLI. Never expose it in logs, prompts, or agent output.
 - The configured API host must be Figma's HTTPS API host (including the
   Figma for Government API host).

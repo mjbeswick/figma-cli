@@ -20,8 +20,11 @@ scope. Supply it through the environment; the CLI never accepts or prints the
 token as a command-line argument:
 
 ```sh
-export FIGMA_ACCESS_TOKEN='…'
+export FIGMA_API_KEY='…'
 ```
+
+`FIGMA_ACCESS_TOKEN` is also accepted and takes precedence if both variables
+are set. Neither variable is stored or printed by the CLI.
 
 Personal access tokens, OAuth access tokens, and plan access tokens are all
 supported by the API. For Figma for Government, set `FIGMA_API_BASE_URL` to

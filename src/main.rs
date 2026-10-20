@@ -68,7 +68,7 @@ enum AppError {
     Io(#[from] std::io::Error),
     #[error("invalid JSON: {0}")]
     Json(#[from] serde_json::Error),
-    #[error("FIGMA_ACCESS_TOKEN is required to inspect a Figma URL or key")]
+    #[error("set FIGMA_ACCESS_TOKEN or FIGMA_API_KEY to inspect a Figma URL or key")]
     MissingToken,
     #[error("request failed: {0}")]
     Http(#[from] reqwest::Error),
@@ -182,7 +182,7 @@ async fn load_source(
     }
 
     let key = file_key(source)?;
-    let token = std::env::var("FIGMA_ACCESS_TOKEN").map_err(|_| AppError::MissingToken)?;
+    let token = figma_token().ok_or(AppError::MissingToken)?;
     let base =
         std::env::var("FIGMA_API_BASE_URL").unwrap_or_else(|_| "https://api.figma.com".to_string());
     let mut url = Url::parse(&base)
@@ -243,6 +243,17 @@ async fn load_source(
     }
     let data = serde_json::from_str(&body)?;
     Ok((data, Some(key.clone()), format!("Figma REST API ({key})")))
+}
+
+fn figma_token() -> Option<String> {
+    std::env::var("FIGMA_ACCESS_TOKEN")
+        .ok()
+        .filter(|token| !token.is_empty())
+        .or_else(|| {
+            std::env::var("FIGMA_API_KEY")
+                .ok()
+                .filter(|token| !token.is_empty())
+        })
 }
 
 fn file_key(source: &str) -> Result<String, AppError> {
@@ -532,6 +543,31 @@ mod tests {
                     || url.username() != ""
                     || url.password().is_some()
             );
+        }
+    }
+
+    #[test]
+    fn token_resolution_supports_both_environment_names() {
+        let primary = std::env::var_os("FIGMA_ACCESS_TOKEN");
+        let alias = std::env::var_os("FIGMA_API_KEY");
+        unsafe {
+            std::env::remove_var("FIGMA_ACCESS_TOKEN");
+            std::env::set_var("FIGMA_API_KEY", "alias-secret");
+        }
+        assert_eq!(figma_token().as_deref(), Some("alias-secret"));
+        unsafe {
+            std::env::set_var("FIGMA_ACCESS_TOKEN", "primary-secret");
+        }
+        assert_eq!(figma_token().as_deref(), Some("primary-secret"));
+        unsafe {
+            match primary {
+                Some(value) => std::env::set_var("FIGMA_ACCESS_TOKEN", value),
+                None => std::env::remove_var("FIGMA_ACCESS_TOKEN"),
+            }
+            match alias {
+                Some(value) => std::env::set_var("FIGMA_API_KEY", value),
+                None => std::env::remove_var("FIGMA_API_KEY"),
+            }
         }
     }
 
